@@ -136,8 +136,8 @@ class Plugin{
 
 			add_action( 'admin_enqueue_scripts', array( $this->admin, 'enqueue_scripts' ) );
 			add_action( 'admin_menu', array( $this->admin, 'admin_menu' ) );
-//			add_action( 'wp_ajax_inline-save-transients', array( $this->admin, 'ajax_save' ) );
-//			add_filter( 'set-screen-option', array( $this->admin, 'filter_set_screen_option' ), 10, 3 );
+			add_filter( 'set-screen-option', array( $this->admin, 'filter_set_screen_option' ), 10, 3 );
+			add_action( 'wp_ajax_leira-transient-save', array( $this->admin, 'ajax_save' ) );
 
 //			/**
 //			 * Rate us

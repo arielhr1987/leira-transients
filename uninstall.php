@@ -22,7 +22,7 @@
  * @link       https://github.com/arielhr1987/leira-transients
  * @since      1.0.0
  *
- * @package    Leira_Cron_Jobs
+ * @package    Leira_Transients
  */
 
 // If uninstall not called from WordPress, then exit.

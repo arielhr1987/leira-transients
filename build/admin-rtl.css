@@ -1,60 +1,41 @@
 /*!***************************************************************************************************************************************************************************************************************************************!*\
   !*** css ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[4].use[1]!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[4].use[2]!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[4].use[3]!./src/admin.scss ***!
   \***************************************************************************************************************************************************************************************************************************************/
-table.cron-jobs > tbody th, table.cron-jobs > tbody td {
-  box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.1);
+table.transients .column-name {
+  width: 30%;
 }
-table.cron-jobs tr th.check-column,
-table.cron-jobs tr td.check-column {
-  padding-right: 4px;
-}
-table.cron-jobs tr.active > th.check-column {
-  border-right: 4px solid #00a0d2;
-  padding-right: 0;
-}
-table.cron-jobs tr.active > th, table.cron-jobs tr.active td {
-  background-color: #f7fcfe;
-}
-table.cron-jobs tr.orphan > th.check-column {
-  border-right: 4px solid #d54e21;
-  padding-right: 0;
-}
-table.cron-jobs tr.orphan > th, table.cron-jobs tr.orphan td {
-  background-color: #fef7f1;
-}
-table.cron-jobs td.column-title strong {
-  display: block;
-  margin-bottom: 0.2em;
-  font-size: 14px;
+table.transients .column-value .nowrap {
   white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
 }
-table.cron-jobs td fieldset.inline-edit-date > legend {
-  padding: 0;
+table.transients .column-expiration {
+  width: 18%;
 }
-
-@media screen and (max-width: 782px) {
-  #wpbody-content .inline-edit-row-cron-job .inline-edit-col-right,
-  #wpbody-content .inline-edit-row-page .inline-edit-col-right {
-    margin-top: 0;
+table.transients .inline-edit-row .inline-edit-col-top {
+  padding: 0 !important;
+}
+@media screen and (min-width: 782px) {
+  table.transients .inline-edit-row .inline-edit-col-top {
+    padding: 0 0 0 12px !important;
   }
 }
-#wpbody-content .inline-edit-row-cron-job .inline-edit-col-left {
-  width: 50%;
+table.transients .inline-edit-row .inline-edit-col-top .inline-edit-col-split {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
 }
-#wpbody-content .inline-edit-row-cron-job .inline-edit-col-right {
-  margin-top: 27px;
-  width: 49%;
+@media screen and (min-width: 782px) {
+  table.transients .inline-edit-row .inline-edit-col-top .inline-edit-col-split {
+    align-items: center;
+    flex-direction: row;
+    gap: 12px;
+  }
 }
-
-#jj,
-#hh,
-#mn {
-  font-size: 12px;
-  width: 2.3em;
-  padding: 3px 5px;
+table.transients .inline-edit-row .inline-edit-col-top .inline-edit-col-split > label {
+  flex: 0 0 auto;
 }
-
-#aa {
-  font-size: 12px;
-  padding: 3px 5px;
+table.transients .inline-edit-row .inline-edit-col-top .inline-edit-col-split > label input, table.transients .inline-edit-row .inline-edit-col-top .inline-edit-col-split > label select {
+  width: 100%;
+  margin: 0;
 }
