@@ -74,7 +74,7 @@ inlineEditL10n = {
 			});
 
 			/**
-			 * Saves the inline edits when pressing enter inside the inline editor.
+			 * Saves the inline edits when pressing Enter inside the inline editor.
 			 */
 			$('input, select', row).keydown(function (e) {
 				// 13 = [enter]
@@ -105,23 +105,19 @@ inlineEditL10n = {
 			/**
 			 * Handle rate us footer click
 			 */
-			$('body').on(
-				'click',
-				'a.leira-transients-admin-rating-link',
-				function () {
-					$.post(
-						ajaxurl,
-						{
-							action: 'leira-transients-footer-rated',
-							_wpnonce: $(this).data('nonce'),
-						},
-						function () {
-							//on success do nothing
-						}
-					);
-					$(this).parent().text($(this).data('rated'));
-				}
-			);
+			$('body').on('click', 'a.leira-transients-admin-rating-link', function () {
+				$.post(
+					ajaxurl,
+					{
+						action: 'leira-transients-footer-rated',
+						_wpnonce: $(this).data('nonce'),
+					},
+					function () {
+						//on success do nothing
+					}
+				);
+				$(this).parent().text($(this).data('rated'));
+			});
 		},
 
 		/**
@@ -175,26 +171,30 @@ inlineEditL10n = {
 				value = value.text();
 
 				if (name === 'expiration') {
-					//Convert to local time string suitable for datetime-local input
-					const time = new Date(value * 1000);
-					//const timeString = time.toLocaleString();
-					const pad = n => String(n).padStart(2, '0');
-					let timeString =
-						time.getFullYear() + '-' +
-						pad(time.getMonth() + 1) + '-' +
-						pad(time.getDate()) + 'T' +
-						pad(time.getHours()) + ':' +
-						pad(time.getMinutes());
-					timeString += ':' + pad(time.getSeconds());
+					let timeString = '';
+					if (value !== '') {
+						//Convert to local time string suitable for datetime-local input
+						const time = new Date(value * 1000);
+						//const timeString = time.toLocaleString();
+						const pad = n => String(n).padStart(2, '0');
+						timeString =
+							time.getFullYear() + '-' +
+							pad(time.getMonth() + 1) + '-' +
+							pad(time.getDate()) + 'T' +
+							pad(time.getHours()) + ':' +
+							pad(time.getMinutes());
+						timeString += ':' + pad(time.getSeconds());
+					}
+
 					$(':input[name=expiration]', editRow).val(timeString); //local time string
 				} else if (name === 'name') {
 					//in case the user updates the name
 					let theName = value;
 
-					if(value.toString().startsWith('_site_transient_')){
+					if (value.toString().startsWith('_site_transient_')) {
 						theName = value.toString().substring(16);
 					}
-					if(value.toString().startsWith('_transient_')){
+					if (value.toString().startsWith('_transient_')) {
 						theName = value.substring(11);
 					}
 					$(':input[name="name"]', editRow).val(theName);
@@ -390,10 +390,7 @@ inlineEditL10n = {
 				d: String(date.getDate()).padStart(2, '0'),
 				j: date.getDate(),
 				H: String(date.getHours()).padStart(2, '0'),
-				h: String(((date.getHours() + 11) % 12) + 1).padStart(
-					2,
-					'0'
-				),
+				h: String(((date.getHours() + 11) % 12) + 1).padStart(2, '0'),
 				g: ((date.getHours() + 11) % 12) + 1,
 				i: String(date.getMinutes()).padStart(2, '0'),
 				s: String(date.getSeconds()).padStart(2, '0'),

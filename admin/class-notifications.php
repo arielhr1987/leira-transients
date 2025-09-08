@@ -53,7 +53,7 @@ class Notifications{
 			$messages = $_COOKIE[ $this->cookie ];
 			$messages = @json_decode( $messages, true );
 			if ( is_array( $messages ) ) {
-				$messages       = wp_unslash( $messages );
+				$messages       = sanitize_text_field( wp_unslash( $messages ) );
 				$this->messages = $messages;
 			}
 

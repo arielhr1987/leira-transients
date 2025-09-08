@@ -12,7 +12,7 @@
  * @package           Leira_Transients
  *
  * @wordpress-plugin
- * Plugin Name: Transients
+ * Plugin Name: Leira Transients
  * Plugin URI: https://github.com/arielhr1987/leira-transients
  * Description: View, create, edit, and delete WordPress transients from the admin dashboard. Ideal for developers and advanced users who want better control over cached data.
  * Version: 1.0.0
@@ -37,7 +37,7 @@ use Leira_Transients\Includes\Activator;
  * Start at version 1.0.0 and use SemVer - https://semver.org
  * Rename this for your plugin and update it as you release new versions.
  */
-define( 'LEIRA_TRANSIENTS_VERSION', '1.2.11' );
+define( 'LEIRA_TRANSIENTS_VERSION', '1.0.0' );
 
 /**
  * Register the plugin's autoloader

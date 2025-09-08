@@ -118,10 +118,10 @@ class List_Table extends WP_List_Table{
 	 * @since 1.0.0
 	 */
 	protected function column_name( $item ) {
-		$name = isset( $item['name'] ) ? $item['name'] : '';
-		$transient = leira_transients()->transients->validate_name($name);
+		$name      = isset( $item['name'] ) ? $item['name'] : '';
+		$transient = leira_transients()->transients->validate_name( $name );
 
-		$out       = sprintf( '<strong>%s</strong>', esc_html( $transient ) );
+		$out = sprintf( '<strong>%s</strong>', esc_html( $transient ) );
 
 		$out .= '<div class="hidden" id="inline_' . esc_attr( $name ) . '">';
 		foreach ( $item as $key => $value ) {
@@ -203,7 +203,7 @@ class List_Table extends WP_List_Table{
 		parent::search_box( $text, $input_id );
 
 		if ( ! empty( $_REQUEST['filter'] ) ) {
-			echo '<input type="hidden" name="filter" value="' . esc_attr( $_REQUEST['filter'] ) . '" />';
+			echo '<input type="hidden" name="filter" value="' . esc_attr( sanitize_text_field( wp_unslash( $_REQUEST['filter'] ) ) ) . '" />';
 		}
 
 		echo '<input type="hidden" name="page" value="leira-transients" />';
@@ -226,7 +226,8 @@ class List_Table extends WP_List_Table{
 		];
 
 		//Selected filter, default to 'all'
-		$current = isset( $_GET['filter'] ) ? sanitize_text_field( $_GET['filter'] ) : 'all';
+		$current = isset( $_GET['filter'] ) ? sanitize_text_field( wp_unslash( $_GET['filter'] ) ) : 'all';
+		$current = wp_unslash( $current );
 		if ( ! in_array( $current, array_keys( $filters ), true ) ) {
 			$current = 'all'; // Default to 'all' if the status is not recognized
 		}
@@ -245,9 +246,9 @@ class List_Table extends WP_List_Table{
 				'filter'   => $name,
 				'per_page' => $this->get_items_per_page( 'tools_page_leira_transients_per_page' ),
 				//'paged'    => $this->get_pagenum(),
-				's'        => isset( $_REQUEST['s'] ) ? esc_attr( wp_unslash( $_REQUEST['s'] ) ) : '',
-				'orderby'  => isset( $_GET['orderby'] ) ? esc_attr( wp_unslash( $_GET['orderby'] ) ) : 'name',
-				'order'    => isset( $_GET['order'] ) ? esc_attr( wp_unslash( $_GET['order'] ) ) : 'desc',
+				's'        => isset( $_REQUEST['s'] ) ? esc_attr( sanitize_text_field( wp_unslash( $_REQUEST['s'] ) ) ) : '',
+				'orderby'  => isset( $_GET['orderby'] ) ? esc_attr( sanitize_text_field( wp_unslash( $_GET['orderby'] ) ) ) : 'name',
+				'order'    => isset( $_GET['order'] ) ? esc_attr( sanitize_text_field( wp_unslash( $_GET['order'] ) ) ) : 'desc',
 			);
 			$url        = add_query_arg( $url_params, $base_url );
 			//Count the transients for the view
@@ -277,10 +278,10 @@ class List_Table extends WP_List_Table{
 	 */
 	public function get_query_args() {
 		return array(
-			's'       => isset( $_REQUEST['s'] ) ? strtolower( sanitize_text_field( $_REQUEST['s'] ) ) : '',
-			'order'   => isset( $_GET['order'] ) ? strtolower( sanitize_text_field( $_GET['order'] ) ) : 'asc',
-			'orderby' => isset( $_GET['orderby'] ) ? strtolower( sanitize_text_field( $_GET['orderby'] ) ) : 'name',
-			'filter'  => isset( $_GET['filter'] ) ? strtolower( sanitize_text_field( $_GET['filter'] ) ) : 'all'
+			's'       => isset( $_REQUEST['s'] ) ? strtolower( sanitize_text_field( wp_unslash( $_REQUEST['s'] ) ) ) : '',
+			'order'   => isset( $_GET['order'] ) ? strtolower( sanitize_text_field( wp_unslash( $_GET['order'] ) ) ) : 'asc',
+			'orderby' => isset( $_GET['orderby'] ) ? strtolower( sanitize_text_field( wp_unslash( $_GET['orderby'] ) ) ) : 'name',
+			'filter'  => isset( $_GET['filter'] ) ? strtolower( sanitize_text_field( wp_unslash( $_GET['filter'] ) ) ) : 'all'
 		);
 	}
 
@@ -405,7 +406,7 @@ class List_Table extends WP_List_Table{
 			$type = esc_html__( 'object', 'leira-transients' );// Object
 		} elseif ( is_serialized( $value ) ) {
 			$type = esc_html__( 'serialized', 'leira-transients' );// Serialized array
-		} elseif ( strip_tags( $value ) !== $value ) {
+		} elseif ( wp_strip_all_tags( $value ) !== $value ) {
 			$type = esc_html__( 'html', 'leira-transients' );// HTML
 		} elseif ( is_scalar( $value ) ) {
 			// Scalar

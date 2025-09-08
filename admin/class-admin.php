@@ -168,12 +168,12 @@ class Admin{
 		echo '<h1 class="wp-heading-inline">Transients</h1>';
 
 		//Display a search subtitle if a search query is set
-		$s = isset( $_REQUEST['s'] ) ? urlencode( wp_unslash( $_REQUEST['s'] ) ) : '';
+		$s = isset( $_REQUEST['s'] ) ? urlencode( sanitize_text_field( wp_unslash( $_REQUEST['s'] ) ) ) : '';
 		if ( strlen( $s ) ) {
 			echo '<span class="subtitle">';
 			printf(
 			/* translators: %s: Search query. */
-				__( 'Search results for: %s' ),
+				__( 'Search results for: %s', 'leira-transients' ),
 				'<strong>' . esc_html( urldecode( $s ) ) . '</strong>'
 			);
 			echo '</span>';
@@ -292,7 +292,7 @@ class Admin{
 		/**
 		 * Check security nonce
 		 */
-		$nonce = isset( $_REQUEST['_wpnonce'] ) ? sanitize_text_field( $_REQUEST['_wpnonce'] ) : '';
+		$nonce = isset( $_REQUEST['_wpnonce'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['_wpnonce'] ) ) : '';
 		if ( ! wp_verify_nonce( $nonce, $table->get_wpnonce_action() ) ) {
 			// enqueue message
 			leira_transients()->notify->error(
@@ -308,7 +308,7 @@ class Admin{
 		switch ( $action ) {
 			case 'delete':
 				//bulk and single delete action
-				$transients        = isset( $_REQUEST['transient'] ) ? $_REQUEST['transient'] : array();
+				$transients        = isset( $_REQUEST['transient'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['transient'] ) ) : array();
 				$is_site_transient = isset( $_REQUEST['is_site_transient'] ) ? sanitize_key( wp_unslash( $_REQUEST['is_site_transient'] ) ) : false;
 				$is_site_transient = boolval( $is_site_transient );
 
@@ -339,10 +339,9 @@ class Admin{
 				break;
 			case 'leira-transient-save':
 				//handled via ajax
-				//$name       = isset( $_REQUEST['name'] ) ? sanitize_key( $_REQUEST['name'] ) : '';
-				$name              = isset( $_REQUEST['name'] ) ? sanitize_text_field( $_REQUEST['name'] ) : '';
-				$original_name     = isset( $_REQUEST['original-name'] ) ? sanitize_text_field( $_REQUEST['original-name'] ) : '';
-				$expiration        = isset( $_REQUEST['expiration'] ) ? sanitize_text_field( $_REQUEST['expiration'] ) : '';
+				$name              = isset( $_REQUEST['name'] ) ? sanitize_text_field( wp_unslash($_REQUEST['name']) ) : '';
+				$original_name     = isset( $_REQUEST['original-name'] ) ? sanitize_text_field( wp_unslash($_REQUEST['original-name']) ) : '';
+				$expiration        = isset( $_REQUEST['expiration'] ) ? sanitize_text_field( wp_unslash($_REQUEST['expiration']) ) : '';
 				$value             = isset( $_REQUEST['value'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['value'] ) ) : '';
 				$is_site_transient = isset( $_REQUEST['is_site_transient'] ) ? sanitize_key( wp_unslash( $_REQUEST['is_site_transient'] ) ) : false;
 				$is_site_transient = boolval( $is_site_transient );
@@ -432,10 +431,8 @@ class Admin{
 					esc_html( wp_create_nonce( 'footer-rated' ) )
 				);
 
-				/*
-				 * translators: The link to review the plugin
-				 */
 				$footer_text = sprintf(
+				/* translators: The link to review the plugin */
 					esc_html__( 'If you like Transients please consider leaving a %s review. It will help us to grow the plugin and make it more popular. Thank you.',
 						'leira-transients' ),
 					wp_kses_post( $link )
@@ -465,8 +462,9 @@ class Admin{
 		 */
 		$action    = 'footer-rated';
 		$query_arg = '_wpnonce';
-		$checked   = isset( $_REQUEST[ $query_arg ] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_REQUEST[ $query_arg ] ) ),
-				$action );
+		$checked   = isset( $_REQUEST[ $query_arg ] )
+		             && wp_verify_nonce( sanitize_text_field( wp_unslash( $_REQUEST[ $query_arg ] ) ), $action );
+
 		if ( ! $checked ) {
 			wp_send_json_error( __( 'Your link has expired, refresh the page and try again.', 'leira-transients' ) );
 		}

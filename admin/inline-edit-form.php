@@ -18,7 +18,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 				<?php //wp_nonce_field( $table->get_wpnonce_action(), '_wpnonce', false ); ?>
 				<div class="inline-edit-wrapper" role="region">
 					<fieldset class="inline-edit-col-top">
-						<legend class="inline-edit-legend"><?php esc_html_e( 'Quick Edit' ); ?></legend>
+						<legend class="inline-edit-legend">
+							<?php esc_html_e( 'Quick Edit', 'leira-transients' ); ?>
+						</legend>
 						<div class="inline-edit-col inline-edit-col-split">
 							<label class="inline-edit-col-left">
 								<span class="title"><?php esc_html_e( 'Name', 'leira-transients' ); ?></span>
@@ -47,10 +49,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 					</fieldset>
 					<div class="inline-edit-save submit">
 						<button type="button" class="cancel button alignleft">
-							<?php esc_html_e( 'Cancel' ); ?>
+							<?php esc_html_e( 'Cancel', 'leira-transients' ); ?>
 						</button>
 						<button type="button" class="save button button-primary alignright">
-							<?php esc_html_e( 'Save' ); ?>
+							<?php esc_html_e( 'Save', 'leira-transients' ); ?>
 						</button>
 						<span class="spinner"></span>
 						<br class="clear"/>

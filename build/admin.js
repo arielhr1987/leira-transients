@@ -175,7 +175,7 @@ inlineEditL10n = {
       });
 
       /**
-       * Saves the inline edits when pressing enter inside the inline editor.
+       * Saves the inline edits when pressing Enter inside the inline editor.
        */
       $('input, select', row).keydown(function (e) {
         // 13 = [enter]
@@ -257,12 +257,15 @@ inlineEditL10n = {
         const name = value.attr('class');
         value = value.text();
         if (name === 'expiration') {
-          //Convert to local time string suitable for datetime-local input
-          const time = new Date(value * 1000);
-          //const timeString = time.toLocaleString();
-          const pad = n => String(n).padStart(2, '0');
-          let timeString = time.getFullYear() + '-' + pad(time.getMonth() + 1) + '-' + pad(time.getDate()) + 'T' + pad(time.getHours()) + ':' + pad(time.getMinutes());
-          timeString += ':' + pad(time.getSeconds());
+          let timeString = '';
+          if (value !== '') {
+            //Convert to local time string suitable for datetime-local input
+            const time = new Date(value * 1000);
+            //const timeString = time.toLocaleString();
+            const pad = n => String(n).padStart(2, '0');
+            timeString = time.getFullYear() + '-' + pad(time.getMonth() + 1) + '-' + pad(time.getDate()) + 'T' + pad(time.getHours()) + ':' + pad(time.getMinutes());
+            timeString += ':' + pad(time.getSeconds());
+          }
           $(':input[name=expiration]', editRow).val(timeString); //local time string
         } else if (name === 'name') {
           //in case the user updates the name

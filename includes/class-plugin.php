@@ -139,11 +139,11 @@ class Plugin{
 			add_filter( 'set-screen-option', array( $this->admin, 'filter_set_screen_option' ), 10, 3 );
 			add_action( 'wp_ajax_leira-transient-save', array( $this->admin, 'ajax_save' ) );
 
-//			/**
-//			 * Rate us
-//			 */
-//			add_filter( 'admin_footer_text', array( $this->admin, 'admin_footer_text' ), 1000 );
-//			add_action( 'wp_ajax_leira-transients-footer-rated', array( $this->admin, 'footer_rated' ) );
+			/**
+			 * Rate us
+			 */
+			add_filter( 'admin_footer_text', array( $this->admin, 'admin_footer_text' ), 1000 );
+			add_action( 'wp_ajax_leira-transients-footer-rated', array( $this->admin, 'footer_rated' ) );
 		}
 	}
 
