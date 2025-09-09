@@ -339,9 +339,9 @@ class Admin{
 				break;
 			case 'leira-transient-save':
 				//handled via ajax
-				$name              = isset( $_REQUEST['name'] ) ? sanitize_text_field( wp_unslash($_REQUEST['name']) ) : '';
-				$original_name     = isset( $_REQUEST['original-name'] ) ? sanitize_text_field( wp_unslash($_REQUEST['original-name']) ) : '';
-				$expiration        = isset( $_REQUEST['expiration'] ) ? sanitize_text_field( wp_unslash($_REQUEST['expiration']) ) : '';
+				$name              = isset( $_REQUEST['name'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['name'] ) ) : '';
+				$original_name     = isset( $_REQUEST['original-name'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['original-name'] ) ) : '';
+				$expiration        = isset( $_REQUEST['expiration'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['expiration'] ) ) : '';
 				$value             = isset( $_REQUEST['value'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['value'] ) ) : '';
 				$is_site_transient = isset( $_REQUEST['is_site_transient'] ) ? sanitize_key( wp_unslash( $_REQUEST['is_site_transient'] ) ) : false;
 				$is_site_transient = boolval( $is_site_transient );
