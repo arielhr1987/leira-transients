@@ -173,7 +173,7 @@ class Admin{
 			echo '<span class="subtitle">';
 			printf(
 			/* translators: %s: Search query. */
-				__( 'Search results for: %s', 'leira-transients' ),
+				esc_html__( 'Search results for: %s', 'leira-transients' ),
 				'<strong>' . esc_html( urldecode( $s ) ) . '</strong>'
 			);
 			echo '</span>';
@@ -308,24 +308,22 @@ class Admin{
 		switch ( $action ) {
 			case 'delete':
 				//bulk and single delete action
-				$transients        = isset( $_REQUEST['transient'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['transient'] ) ) : array();
-				$is_site_transient = isset( $_REQUEST['is_site_transient'] ) ? sanitize_key( wp_unslash( $_REQUEST['is_site_transient'] ) ) : false;
-				$is_site_transient = boolval( $is_site_transient );
+				$transients = isset( $_REQUEST['transient'] ) ? wp_unslash( $_REQUEST['transient'] ) : array();
+				$transients = is_array( $transients ) ? $transients : array(); // ensure it's an array
+				$transients = array_map( 'sanitize_text_field', $transients ); // sanitize each value
+				$transients = array_filter( $transients );                     // remove empty values
+				$transients = array_values( $transients );                     // reindex array
 
 				if ( ! is_array( $transients ) ) {
 					leira_transients()->notify->error(
-						__( 'Security check failed, please try again.', 'leira-transients' )
+						__( 'Please select a transient to delete.', 'leira-transients' )
 					);
 					wp_safe_redirect( $redirect_url );
-					//wp_die( __( 'Security check failed', 'leira-transients' ) );
+					die();
 				}
 
-				$transients = array_filter( $transients, 'is_string' );        // removes arrays/objects
-				$transients = array_map( 'sanitize_text_field', $transients ); // sanitize each value
-				$transients = array_values( $transients );                     //reindex array
-
 				//Delete transients
-				$deleted = leira_transients()->transients->delete( $transients, $is_site_transient );
+				$deleted = leira_transients()->transients->delete( $transients );
 
 				//Delete result message
 				if ( $deleted ) {
@@ -340,11 +338,8 @@ class Admin{
 			case 'leira-transient-save':
 				//handled via ajax
 				$name              = isset( $_REQUEST['name'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['name'] ) ) : '';
-				$original_name     = isset( $_REQUEST['original-name'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['original-name'] ) ) : '';
 				$expiration        = isset( $_REQUEST['expiration'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['expiration'] ) ) : '';
 				$value             = isset( $_REQUEST['value'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['value'] ) ) : '';
-				$is_site_transient = isset( $_REQUEST['is_site_transient'] ) ? sanitize_key( wp_unslash( $_REQUEST['is_site_transient'] ) ) : false;
-				$is_site_transient = boolval( $is_site_transient );
 
 				// Validate name
 				if ( empty( $name ) ) {
@@ -357,17 +352,11 @@ class Admin{
 					wp_die( esc_html__( 'Please select a valid expiration date/time.', 'leira-transients' ) );
 				}
 
-				//If the name has changed, remove the original transient
-				if ( leira_transients()->transients->validate_name( $original_name ) !== $name ) {
-					//leira_transients()->transients->delete( $original_name );
-				}
-
 				// Update the transient
 				$edited = leira_transients()->transients->set(
 					$name,
 					$value,
-					$expiration - time(),
-					$is_site_transient
+					$expiration - time()
 				);
 
 				//Return the updated row
@@ -419,7 +408,7 @@ class Admin{
 		if ( isset( $current_screen->id ) && in_array( $current_screen->id, $pages ) ) {
 			// Change the footer text
 			if ( ! get_option( 'leira-transients-footer-rated' ) ) {
-				$link = '<a href="https://wordpress.org/support/plugin/leira-transients/reviews/?filter=5" target="_blank"
+				$link = '<a href="https://wordpress.org/support/plugin/leira-transients/reviews/" target="_blank"
 				   class="leira-transients-admin-rating-link"
 				   data-rated="%s"
 				   data-nonce="%s">

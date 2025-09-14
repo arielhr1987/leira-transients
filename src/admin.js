@@ -197,8 +197,11 @@ inlineEditL10n = {
 					if (value.toString().startsWith('_transient_')) {
 						theName = value.substring(11);
 					}
-					$(':input[name="name"]', editRow).val(theName);
-					$(':input[name="original-name"]', editRow).val(value);
+					//$(':input[name="name"]', editRow).val(theName);
+					//$(':input[name="original-name"]', editRow).val(value);
+
+					$(':input[name="name"]', editRow).val(value);
+					$(':input[name="name-label"]', editRow).val(theName);
 				} else {
 					//Any other input field
 					$(':input[name=' + name + ']', editRow).val(value);

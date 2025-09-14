@@ -13,9 +13,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 		<tr id="inline-edit" class="inline-edit-row quick-edit-row-page inline-edit-row-page" style="display: none">
 			<td colspan="<?php esc_html( $table->get_column_count() ) ?>" class="colspanchange">
 				<input type="hidden" name="action" value="leira-transient-save"/>
-				<input type="hidden" name="original-name" value=""/>
+				<input type="hidden" name="name" value=""/>
 				<?php wp_nonce_field( $table->get_wpnonce_action() ); ?>
-				<?php //wp_nonce_field( $table->get_wpnonce_action(), '_wpnonce', false ); ?>
 				<div class="inline-edit-wrapper" role="region">
 					<fieldset class="inline-edit-col-top">
 						<legend class="inline-edit-legend">
@@ -25,13 +24,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 							<label class="inline-edit-col-left">
 								<span class="title"><?php esc_html_e( 'Name', 'leira-transients' ); ?></span>
 								<span class="input-text-wrap">
-									<input class="ptitle" type="text" name="name" value="" autocomplete="off"/>
+									<input class="ptitle" type="text" name="name-label" value="" autocomplete="off" disabled/>
 								</span>
 							</label>
 							<label class="inline-edit-col-left">
 								<span class="title"><?php esc_html_e( 'Expiration', 'leira-transients' ); ?></span>
 								<span class="input-text-wrap">
-<!--									<input class="ptitle" type="text" name="expiration" value="" autocomplete="off"/>-->
 									<input class="ptitle" type="datetime-local" name="expiration" autocomplete="off"/>
 								</span>
 							</label>

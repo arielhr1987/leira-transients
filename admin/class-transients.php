@@ -209,10 +209,12 @@ class Transients{
 	 * @return bool True on success, false on failure.
 	 * @since 1.0.0
 	 */
-	public function set( $name, $value, $expiration = 0, $is_site_transient = false ) {
-		return $is_site_transient ?
-			set_site_transient( $name, $value, $expiration ) :
-			set_transient( $name, $value, $expiration );
+	public function set( $name, $value, $expiration = 0 ) {
+		$transient = $this->validate_name( $name );
+
+		return $this->is_site_transient( $name ) ?
+			set_site_transient( $transient, $value, $expiration ) :
+			set_transient( $transient, $value, $expiration );
 	}
 
 	/**

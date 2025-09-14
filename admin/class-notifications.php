@@ -50,10 +50,13 @@ class Notifications{
 		 * Read cookie if exist
 		 */
 		if ( isset( $_COOKIE[ $this->cookie ] ) ) {
-			$messages = $_COOKIE[ $this->cookie ];
+			$messages = wp_unslash( $_COOKIE[ $this->cookie ] );
 			$messages = @json_decode( $messages, true );
 			if ( is_array( $messages ) ) {
-				$messages       = sanitize_text_field( wp_unslash( $messages ) );
+				$messages       = array_filter( array_map( function ( $sub_array ) {
+					return is_array( $sub_array ) ?
+						array_filter( array_map( 'sanitize_text_field', $sub_array ) ) : null;
+				}, $messages ) );
 				$this->messages = $messages;
 			}
 

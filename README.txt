@@ -17,7 +17,7 @@ Manage WordPress transients easily with a clean, intuitive interface — view, e
 
 With **Leira Transients**, you can:  
 - View all registered transients in a single dashboard.  
-- Edit transient **names**, **values**, and **expiration times** directly from the admin.  
+- Edit transient **values** and **expiration times** directly from the admin.  
 
 **Important:** This plugin is intended for users who know what they are doing or have experience in WordPress development. Modifying transient values incorrectly could break your site. Use with caution.  
 
@@ -36,7 +36,7 @@ This plugin is ideal for developers, site administrators, and anyone who wants f
 Not at the moment. You can view, edit, and delete existing transients, but creating new ones is not yet supported.  
 
 = What parts of a transient can I edit? =  
-You can modify the **name**, **value**, and **expiration time** of any transient.  
+You can modify the **value** and **expiration time** of any transient.  
 
 = Will using this plugin affect site performance? =  
 No. Leira Transients only provides a management interface and does not alter WordPress’s internal transient handling.  

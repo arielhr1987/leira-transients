@@ -42,7 +42,7 @@ define( 'LEIRA_TRANSIENTS_VERSION', '1.0.0' );
 /**
  * Register the plugin's autoloader
  */
-require_once plugin_dir_path( __FILE__ ) . 'autoload.php';
+require_once plugin_dir_path( __FILE__ ) . 'includes' . DIRECTORY_SEPARATOR . 'autoload.php';
 
 /**
  * The code that runs during plugin activation.

@@ -1,12 +1,16 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * WordPress-style autoloader supporting nested namespaces and class filenames like class-*.php
  */
 spl_autoload_register( function ( $class ) {
 
 	$prefix   = 'Leira_Transients\\';
-	$base_dir = __DIR__ . DIRECTORY_SEPARATOR;
+	$base_dir = dirname( __DIR__ ) . DIRECTORY_SEPARATOR;
 
 	// Check if the class belongs to our namespace
 	if ( strpos( $class, $prefix ) !== 0 ) {
