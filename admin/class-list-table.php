@@ -434,15 +434,13 @@ class List_Table extends WP_List_Table{
 	/**
 	 * Outputs the hidden row displayed when inline editing
 	 *
-	 * @since 3.1.0
+	 * @since 1.0.0
 	 */
 	public function inline_edit() {
 
-		$html = leira_transients()->admin->render_template(
+		echo leira_transients()->admin->render_template(
 			__DIR__ . '/inline-edit-form.php',
 			array( 'table' => $this )
 		);
-
-		return $html;
 	}
 }

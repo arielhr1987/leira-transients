@@ -4,7 +4,7 @@ Donate link: https://github.com/arielhr1987
 Tags: transients, admin tools, developer tools, optimization
 Requires at least: 4.1
 Tested up to: 6.8
-Stable tag: 1.0.1
+Stable tag: 1.0.2
 Requires PHP: 8.3
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html

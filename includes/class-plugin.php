@@ -130,7 +130,7 @@ class Plugin{
 		if ( is_admin() ) {
 
 			//Admin logic
-			$this->admin = new Admin();
+			$this->admin      = new Admin();
 			$this->transients = new Transients();
 			$this->notify     = new Notifications();
 

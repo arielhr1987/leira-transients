@@ -7,15 +7,15 @@
  * This file also includes all the dependencies used by the plugin,
  * registers the activation and deactivation functions, and defines a function that starts the plugin.
  *
- * @link              https://github.com/arielhr1987
- * @since             1.0.0
- * @package           Leira_Transients
+ * @link https://github.com/arielhr1987
+ * @since 1.0.0
+ * @package Leira_Transients
  *
  * @wordpress-plugin
  * Plugin Name: Leira Transients
  * Plugin URI: https://github.com/arielhr1987/leira-transients
  * Description: View, create, edit, and delete WordPress transients from the admin dashboard. Ideal for developers and advanced users who want better control over cached data.
- * Version: 1.0.1
+ * Version: 1.0.2
  * Author: Ariel
  * Author URI: https://leira.dev
  * License: GPL-2.0+
@@ -37,7 +37,7 @@ use Leira_Transients\Includes\Activator;
  * Start at version 1.0.0 and use SemVer - https://semver.org
  * Rename this for your plugin and update it as you release new versions.
  */
-define( 'LEIRA_TRANSIENTS_VERSION', '1.0.1' );
+define( 'LEIRA_TRANSIENTS_VERSION', '1.0.2' );
 
 /**
  * Register the plugin's autoloader
@@ -58,7 +58,7 @@ register_deactivation_hook( __FILE__, array( Activator::class, 'deactivate' ) );
  * Helper method to get the main instance of the plugin
  *
  * @return Leira_Transients\Includes\Plugin
- * @since    1.0.0
+ * @since   1.0.0
  * @access   global
  */
 function leira_transients() {

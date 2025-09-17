@@ -184,7 +184,7 @@ class Admin{
 
 		echo '<hr class="wp-header-end">';
 
-		echo $table->views();
+		$table->views();
 
 		echo '<form id="leira-transients-search" method="get">';
 		$table->search_box( 'Search Transients', 'transients' );
@@ -196,7 +196,7 @@ class Admin{
 		echo '</form>';
 
 		if ( $table->has_items() ) {
-			echo $table->inline_edit();
+			$table->inline_edit();
 		}
 
 		echo '</div>';
@@ -337,9 +337,9 @@ class Admin{
 				break;
 			case 'leira-transient-save':
 				//handled via ajax
-				$name              = isset( $_REQUEST['name'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['name'] ) ) : '';
-				$expiration        = isset( $_REQUEST['expiration'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['expiration'] ) ) : '';
-				$value             = isset( $_REQUEST['value'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['value'] ) ) : '';
+				$name       = isset( $_REQUEST['name'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['name'] ) ) : '';
+				$expiration = isset( $_REQUEST['expiration'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['expiration'] ) ) : '';
+				$value      = isset( $_REQUEST['value'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['value'] ) ) : '';
 
 				// Validate name
 				if ( empty( $name ) ) {
@@ -395,7 +395,7 @@ class Admin{
 	 * @param $footer_text
 	 *
 	 * @return string
-	 * @since 1.2.3
+	 * @since 1.0.0
 	 */
 	public function admin_footer_text( $footer_text ) {
 		$current_screen = get_current_screen();
