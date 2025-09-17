@@ -4,7 +4,7 @@ Donate link: https://github.com/arielhr1987
 Tags: transients, admin tools, developer tools, optimization
 Requires at least: 4.1
 Tested up to: 6.8
-Stable tag: 1.0.2
+Stable tag: 1.0.3
 Requires PHP: 8.3
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -49,6 +49,15 @@ No. Leira Transients only provides a management interface and does not alter Wor
 4. Use Screen Options to customize the display.  
 
 == Changelog ==
+
+= 1.0.3 =
+* Plugin deployment.
+
+= 1.0.2 =
+* Improvements requested by the WordPress plugin team.
+
+= 1.0.1 =
+* Fix some bugs.
 
 = 1.0.0 =
 * Initial release.
