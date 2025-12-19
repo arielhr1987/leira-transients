@@ -1,10 +1,10 @@
-=== Leira Transients ===
+=== Transients ===
 Contributors: arielhr1987
 Donate link: https://github.com/arielhr1987
 Tags: transients, admin tools, developer tools, optimization
 Requires at least: 4.1
 Tested up to: 6.8
-Stable tag: 1.0.3
+Stable tag: 1.0.4
 Requires PHP: 8.3
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -49,6 +49,10 @@ No. Leira Transients only provides a management interface and does not alter Wor
 4. Use Screen Options to customize the display.  
 
 == Changelog ==
+
+= 1.0.4 =
+* WordPress 6.9 compatibility check.
+* Added blueprint.json to enable Live Preview support.
 
 = 1.0.3 =
 * Plugin deployment.
