@@ -1,4 +1,4 @@
-=== Leira Transients ===
+=== Transients ===
 Contributors: arielhr1987
 Donate link: https://github.com/arielhr1987
 Tags: transients, admin tools, developer tools, optimization
