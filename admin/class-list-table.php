@@ -118,11 +118,13 @@ class List_Table extends WP_List_Table{
 	 * @since 1.0.0
 	 */
 	protected function column_name( $item ) {
-		$name      = isset( $item['name'] ) ? $item['name'] : '';
-		$transient = leira_transients()->transients->validate_name( $name );
-		$is_site   = leira_transients()->transients->is_site_transient( $name );
-		$scope     = $is_site ? esc_html__( 'Site', 'leira-transients' ) : esc_html__( 'Regular', 'leira-transients' );
-		$badge_css = $is_site ? 'badge-blue' : 'badge-gray';
+		$name        = isset( $item['name'] ) ? $item['name'] : '';
+		$label       = isset( $item['label'] ) ? (string) $item['label'] : '';
+		$transient   = '' !== $label ? $label : leira_transients()->transients->validate_name( $name );
+		$is_site     = leira_transients()->transients->is_site_transient( $name );
+		$scope       = $is_site ? esc_html__( 'Site', 'leira-transients' ) : esc_html__( 'Regular',
+			'leira-transients' );
+		$badge_css   = $is_site ? 'badge-blue' : 'badge-gray';
 		$scope_title = $is_site
 			? esc_attr__( 'A site transient (network-level transient).', 'leira-transients' )
 			: esc_attr__( 'A regular transient (site-level transient).', 'leira-transients' );
@@ -250,8 +252,7 @@ class List_Table extends WP_List_Table{
 		$orderby  = isset( $_GET['orderby'] ) ? sanitize_text_field( wp_unslash( $_GET['orderby'] ) ) : 'name';
 		$order    = isset( $_GET['order'] ) ? sanitize_text_field( wp_unslash( $_GET['order'] ) ) : 'desc';
 		$counts   = leira_transients()->transients->all( array(
-			'count' => 'views',
-			's'     => $s,
+			'count' => 'views'
 		) );
 
 		//Create the views
@@ -261,8 +262,8 @@ class List_Table extends WP_List_Table{
 			$class = ( $current === $name ) ? 'current' : '';
 			//Create the URL for the view
 			$url_params = array(
-				'page'     => 'leira-transients',
-				'filter'   => $name
+				'page'   => 'leira-transients',
+				'filter' => $name
 			);
 			$url        = add_query_arg( $url_params, $base_url );
 			//Count the transients for the view
@@ -310,21 +311,30 @@ class List_Table extends WP_List_Table{
 		$row_actions = '';
 
 		if ( $column_name === $primary ) {
+			$label      = isset( $item['label'] ) ? (string) $item['label'] : '';
+			$label      = '' !== $label ? $label : leira_transients()->transients->validate_name( $item['name'] );
+			$delete_url = add_query_arg(
+				[
+					'page'        => 'leira-transients',
+					'action'      => 'delete',
+					'action1'     => 'delete',
+					'transient[]' => urlencode( $item['name'] ),
+				],
+				admin_url( 'tools.php' )
+			);
+			$delete_url = wp_nonce_url( $delete_url, $this->get_wpnonce_action() );
+
 			$actions     = array(
 				'inline hide-if-no-js' => sprintf(
 					'<button type="button" class="button-link editinline" aria-label="%s" aria-expanded="false">%s</button>',
 					/*
 					 * translators: the transient name
 					 */
-					esc_attr( sprintf( __( 'Quick edit &#8220;%s&#8221;', 'leira-transients' ), $item['name'] ) ),
+					esc_attr( sprintf( __( 'Quick edit &#8220;%s&#8221;', 'leira-transients' ), $label ) ),
 					esc_html( __( 'Quick&nbsp;Edit', 'leira-transients' ) )
 				),
 				'delete'               => sprintf( '<a href="%s" class="submitdelete" aria-label="%s">%s</a>',
-					esc_url( wp_nonce_url( add_query_arg( [
-						'action'      => 'delete',
-						'action1'     => 'delete',
-						'transient[]' => urlencode( $item['name'] ),
-					] ), $this->get_wpnonce_action() ) ),
+					esc_url( $delete_url ),
 					__( 'Delete', 'leira-transients' ),
 					__( 'Delete', 'leira-transients' )
 				)

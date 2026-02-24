@@ -188,22 +188,11 @@ inlineEditL10n = {
 					}
 
 					$(':input[name=expiration]', editRow).val(timeString); //local time string
-				} else if (name === 'name') {
-					//in case the user updates the name
-					let theName = value;
-
-					if (value.toString().startsWith('_site_transient_')) {
-						theName = value.toString().substring(16);
-					}
-					if (value.toString().startsWith('_transient_')) {
-						theName = value.substring(11);
-					}
-					//$(':input[name="name"]', editRow).val(theName);
-					//$(':input[name="original-name"]', editRow).val(value);
-
-					$(':input[name="name"]', editRow).val(value);
-					$(':input[name="name-label"]', editRow).val(theName);
-				} else {
+					} else if (name === 'name') {
+						$(':input[name="name"]', editRow).val(value);
+					} else if (name === 'label') {
+						$(':input[name="name-label"]', editRow).val(value);
+					} else {
 					//Any other input field
 					$(':input[name=' + name + ']', editRow).val(value);
 				}
@@ -242,15 +231,17 @@ inlineEditL10n = {
 			const $error = $errorNotice.find('.error');
 
 			let expiration = $('#edit-' + id + ' input[name="expiration"]').val();
-			expiration = new Date(expiration);
-			if (isNaN(expiration.getTime())) {
-				$('table.widefat .spinner').removeClass('is-active');
-				$errorNotice.removeClass('hidden');
-				$error.html(inlineEditL10n.invalidDate);
-				wp.a11y.speak(inlineEditL10n.invalidDate);
-				return false;
+			if (expiration !== '') {
+				expiration = new Date(expiration);
+				if (isNaN(expiration.getTime())) {
+					$('table.widefat .spinner').removeClass('is-active');
+					$errorNotice.removeClass('hidden');
+					$error.html(inlineEditL10n.invalidDate);
+					wp.a11y.speak(inlineEditL10n.invalidDate);
+					return false;
+				}
+				expiration = expiration.toISOString();//Convert to UTC timestamp
 			}
-			expiration = expiration.toISOString();//Convert tu UTC timestamp
 			params = {
 				expiration: expiration
 			};

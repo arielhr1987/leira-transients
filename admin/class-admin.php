@@ -299,7 +299,7 @@ class Admin{
 				__( 'Security check failed, please try again.', 'leira-transients' )
 			);
 			wp_safe_redirect( $redirect_url );
-			die();
+			exit;
 		}
 
 		/**
@@ -319,7 +319,7 @@ class Admin{
 						__( 'Please select a transient to delete.', 'leira-transients' )
 					);
 					wp_safe_redirect( $redirect_url );
-					die();
+					exit;
 				}
 
 				//Delete transients
@@ -334,7 +334,7 @@ class Admin{
 
 				//redirect to avoid resubmission
 				wp_safe_redirect( $redirect_url );
-				break;
+				exit;
 			case 'leira-transient-save':
 				//handled via ajax
 				$name       = isset( $_REQUEST['name'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['name'] ) ) : '';
@@ -347,18 +347,30 @@ class Admin{
 					wp_die( esc_html__( 'Please select a valid transient name.', 'leira-transients' ) );
 				}
 
-				//Validate expiration
-				$expiration = strtotime( $expiration );
-				if ( $expiration === false || $expiration === - 1 ) {
-					wp_die( esc_html__( 'Please select a valid expiration date/time.', 'leira-transients' ) );
+				// Validate and normalize expiration.
+				// Empty expiration means a persistent transient.
+				if ( '' === trim( $expiration ) ) {
+					// Ensure previous timeout metadata is removed before setting a persistent value.
+					leira_transients()->transients->delete( $name );
+					$expiration_ttl = 0;
+				} else {
+					$expiration = strtotime( $expiration );
+					if ( $expiration === false || $expiration === - 1 ) {
+						wp_die( esc_html__( 'Please select a valid expiration date/time.', 'leira-transients' ) );
+					}
+					//This value could be a date in the past (expired) or a date in the future
+					$expiration_ttl = $expiration - time();
 				}
 
 				// Update the transient
-				$edited = leira_transients()->transients->set(
-					$name,
-					$value,
-					$expiration - time()
-				);
+				$edited = leira_transients()->transients->set( $name, $value, $expiration_ttl );
+
+				// WordPress may return false when the value is unchanged, even if the intent is to update expiration.
+				// Force a rewrite as fallback.
+				if ( ! $edited ) {
+					leira_transients()->transients->delete( $name );
+					$edited = leira_transients()->transients->set( $name, $value, $expiration_ttl );
+				}
 
 				//Return the updated row
 				if ( ! $edited ) {
@@ -370,8 +382,9 @@ class Admin{
 				//Output the row table with the new updated data
 				$GLOBALS['hook_suffix'] = '';//avoid notice error
 				$table                  = $this->get_list_table();
+				$label                  = leira_transients()->transients->validate_name( $name );
 
-				$table->single_row( compact( 'name', 'value', 'expiration' ) );
+				$table->single_row( compact( 'name', 'label', 'value', 'expiration' ) );
 
 				wp_die();
 				break;
@@ -379,7 +392,7 @@ class Admin{
 				// nothing to do
 		}
 
-		die();
+		return;
 	}
 
 	/**

@@ -100,9 +100,11 @@ class Transients{
 			 */
 			$subquery = [ 'SELECT' ];
 			if ( ! $count ) {
-				$subquery[] = array(
+				$type_length = strlen( $type ) + 2;
+				$subquery[]  = array(
 					'o.option_id AS `id`,',
 					'o.option_name AS `name`,',
+					"SUBSTRING(o.option_name,$type_length) AS `label`,",
 					'o.option_value AS `value`,',
 					't.option_value AS `expiration`'
 				);
@@ -169,6 +171,7 @@ class Transients{
 			 */
 			$order_by = isset( $args['orderby'] ) ? $args['orderby'] : 'name';
 			$order_by = in_array( $order_by, array( 'name', 'value', 'expiration' ), true ) ? $order_by : 'name';
+			$order_by = $order_by === 'name' ? 'label' : $order_by; //force sort by label instead
 			$order    = isset( $args['order'] ) ? strtoupper( $args['order'] ) : 'DESC';
 			$order    = in_array( $order, array( 'ASC', 'DESC' ), true ) ? $order : 'DESC';
 
@@ -192,7 +195,7 @@ class Transients{
 		// Query
 		if ( empty( $count ) ) {
 			$transients = $this->db->get_results( $query, ARRAY_A );
-		} elseif ( $count_arg == 'views' ) {
+		} elseif ( 'views' === $count_arg ) {
 			$transients = $this->db->get_row( $query, ARRAY_A );
 		} else {
 			$transients = $this->db->get_var( $query );
