@@ -60,12 +60,12 @@ class Notifications{
 				$this->messages = $messages;
 			}
 
-				/**
-				 * Delete the cookie by setting an expiration time before the current time
-				 */
-				if ( ! headers_sent() ) {
-					$this->set_notification_cookie( '', strtotime( '-1 month' ) );
-				}
+			/**
+			 * Delete the cookie by setting an expiration time before the current time
+			 */
+			if ( ! headers_sent() ) {
+				$this->set_notification_cookie( '', strtotime( '-1 month' ) );
+			}
 		}
 	}
 
@@ -186,8 +186,8 @@ class Notifications{
 	/**
 	 * Set the notifications cookie with secure defaults.
 	 *
-	 * @param string $value Cookie value.
-	 * @param int    $expires Cookie expiration timestamp.
+	 * @param  string  $value  Cookie value.
+	 * @param  int  $expires  Cookie expiration timestamp.
 	 *
 	 * @return bool
 	 */
