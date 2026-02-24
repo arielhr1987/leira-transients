@@ -1,67 +1,89 @@
-=== Transients ===
+=== Leira Transients ===
 Contributors: arielhr1987
 Donate link: https://github.com/arielhr1987
 Tags: transients, admin tools, developer tools, optimization
 Requires at least: 4.1
-Tested up to: 6.8
-Stable tag: 1.0.4
+Tested up to: 6.9
+Stable tag: 1.0.5
 Requires PHP: 8.3
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Manage WordPress transients easily with a clean, intuitive interface — view, edit, or delete them without touching code.
+Inspect, edit, and delete WordPress transients from Tools -> Transients.
 
 == Description ==
 
-**Leira Transients** is a lightweight, developer-friendly plugin that simplifies the management of WordPress transients.  
+Leira Transients gives you direct visibility and control over transient data stored by WordPress and plugins.
 
-With **Leira Transients**, you can:  
-- View all registered transients in a single dashboard.  
-- Edit transient **values** and **expiration times** directly from the admin.  
+From a single admin screen, you can:
 
-**Important:** This plugin is intended for users who know what they are doing or have experience in WordPress development. Modifying transient values incorrectly could break your site. Use with caution.  
+* Browse standard and site transients.
+* Search, sort, and filter by status (All, Active, Expired, Persistent).
+* Quick-edit transient value and expiration.
+* Delete one or many transients safely from the UI.
+* Use per-page screen options for large datasets.
 
-This plugin is ideal for developers, site administrators, and anyone who wants full visibility and control over WordPress’s transient system — no coding required.  
+This plugin is built for developers and advanced site administrators.
+
+**Important**: changing transient values or expiration dates can affect plugin behavior and cache logic. Use carefully on production sites.
 
 == Installation ==
 
-1. Upload the `leira-transients` folder to `/wp-content/plugins/`, or install it directly via the WordPress Plugin Directory.  
-2. Activate the plugin through the **Plugins** menu in WordPress.  
-3. Navigate to **Tools → Transients** to start managing your transients.  
-4. That’s it — you’re ready to go!  
+1. Upload the `leira-transients` folder to `/wp-content/plugins/`, or install it from the WordPress plugin directory.
+2. Activate the plugin from the Plugins screen in WordPress.
+3. Go to Tools -> Transients.
+4. Manage transient values, expiration dates, and cleanup actions.
 
 == Frequently Asked Questions ==
 
-= Can I create new transients with this plugin? =  
-Not at the moment. You can view, edit, and delete existing transients, but creating new ones is not yet supported.  
+= Can I create new transients with this plugin? =
+No. The plugin currently supports viewing, editing, and deleting existing transients only.
 
-= What parts of a transient can I edit? =  
-You can modify the **value** and **expiration time** of any transient.  
+= What can I edit? =
+You can edit transient value and expiration time.
 
-= Will using this plugin affect site performance? =  
-No. Leira Transients only provides a management interface and does not alter WordPress’s internal transient handling.  
+= Is it safe to use on production? =
+Yes, but use caution. Incorrect edits can change runtime behavior for themes/plugins that depend on those transients.
+
+= Does it support multisite/site transients? =
+Yes. It lists both transient and site transient records.
 
 == Screenshots ==
 
-1. Access the "Transients" screen from the "Tools" menu.  
-2. Browse a complete list of registered transients with quick action buttons.  
-3. Edit transient values and expiration times directly in the admin.  
-4. Use Screen Options to customize the display.  
+1. Open the Transients screen from the Tools menu.
+2. Browse, search, and filter transients.
+3. Quick-edit transient value and expiration.
+4. Use Screen Options to customize pagination.
+
+== Support and Contributions ==
+
+GitHub repository: https://github.com/arielhr1987/leira-transients
+
+Suggestions, feature requests, bug reports, and code improvements are all welcome.
+If you have an idea to improve the plugin, please open an issue or submit a pull request.
 
 == Changelog ==
 
+= 1.0.5 =
+* Improved query performance for count/list view calculations.
+* Preserved current search/sort values when switching filter views.
+* Improved quick-edit validation for invalid expiration dates.
+* Hardened admin notification cookies (`HttpOnly`, `Secure` when applicable, `SameSite=Lax`).
+* Improved transient value type detection (JSON primitives, serialized scalar subtypes, and null).
+* Updated plugin readme text and documentation clarity.
+
 = 1.0.4 =
-* WordPress 6.9 compatibility check.
-* Added blueprint.json to enable Live Preview support.
+* WordPress 6.9 compatibility update.
+* Added `blueprint.json` for live preview support.
 
 = 1.0.3 =
-* Plugin deployment.
+* Deployment updates.
 
 = 1.0.2 =
-* Improvements requested by the WordPress plugin team.
+* Improvements requested by the WordPress.org plugin review team.
 
 = 1.0.1 =
-* Fix some bugs.
+* Bug fixes.
 
 = 1.0.0 =
 * Initial release.
