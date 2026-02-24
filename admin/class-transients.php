@@ -98,13 +98,19 @@ class Transients{
 			/**
 			 * SELECT
 			 */
-			$subquery   = [ 'SELECT' ];
-			$subquery[] = array(
-				'o.option_id AS `id`,',
-				'o.option_name AS `name`,',
-				'o.option_value AS `value`,',
-				't.option_value AS `expiration`'
-			);
+			$subquery = [ 'SELECT' ];
+			if ( ! $count ) {
+				$subquery[] = array(
+					'o.option_id AS `id`,',
+					'o.option_name AS `name`,',
+					'o.option_value AS `value`,',
+					't.option_value AS `expiration`'
+				);
+			} elseif ( 'views' === $count_arg ) {
+				$subquery[] = 't.option_value AS `expiration`';
+			} else {
+				$subquery[] = '1';
+			}
 
 			/**
 			 * FROM

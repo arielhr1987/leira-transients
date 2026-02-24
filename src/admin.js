@@ -10,6 +10,7 @@ import './admin.scss';
 window.wp = window.wp || {};
 inlineEditL10n = {
 	error: 'Error while saving the changes.',
+	invalidDate: 'Please provide a valid expiration date.',
 	saved: 'Changes saved.',
 	confirmDelete: 'Are you sure you want to delete this transient?',
 };
@@ -237,8 +238,18 @@ inlineEditL10n = {
 
 			$('table.widefat .spinner').addClass('is-active');
 
+			const $errorNotice = $('#edit-' + id + ' .inline-edit-save .notice-error');
+			const $error = $errorNotice.find('.error');
+
 			let expiration = $('#edit-' + id + ' input[name="expiration"]').val();
 			expiration = new Date(expiration);
+			if (isNaN(expiration.getTime())) {
+				$('table.widefat .spinner').removeClass('is-active');
+				$errorNotice.removeClass('hidden');
+				$error.html(inlineEditL10n.invalidDate);
+				wp.a11y.speak(inlineEditL10n.invalidDate);
+				return false;
+			}
 			expiration = expiration.toISOString();//Convert tu UTC timestamp
 			params = {
 				expiration: expiration

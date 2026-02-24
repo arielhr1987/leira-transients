@@ -339,7 +339,8 @@ class Admin{
 				//handled via ajax
 				$name       = isset( $_REQUEST['name'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['name'] ) ) : '';
 				$expiration = isset( $_REQUEST['expiration'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['expiration'] ) ) : '';
-				$value      = isset( $_REQUEST['value'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['value'] ) ) : '';
+				$value      = isset( $_REQUEST['value'] ) ? wp_unslash( $_REQUEST['value'] ) : '';
+				$value      = is_string( $value ) ? $value : '';
 
 				// Validate name
 				if ( empty( $name ) ) {
