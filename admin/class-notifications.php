@@ -64,7 +64,7 @@ class Notifications{
 			 * Delete the cookie by setting an expiration time before the current time
 			 */
 			if ( ! headers_sent() ) {
-				@setcookie( $this->cookie, '', strtotime( "-1 month" ) );
+				$this->set_notification_cookie( '', strtotime( '-1 month' ) );
 			}
 		}
 	}
@@ -133,7 +133,7 @@ class Notifications{
 			 * Set the cookie to read in the next call
 			 * Expiration time is set to a long number to avoid timezone differences
 			 */
-			@setcookie( $this->cookie, wp_json_encode( $this->messages ), strtotime( '+1 month' ) );
+			$this->set_notification_cookie( wp_json_encode( $this->messages ), strtotime( '+1 month' ) );
 		}
 
 		return true;
@@ -181,5 +181,41 @@ class Notifications{
 	 */
 	public function info( $msg ) {
 		$this->add( 'info', $msg );
+	}
+
+	/**
+	 * Set the notifications cookie with secure defaults.
+	 *
+	 * @param  string  $value  Cookie value.
+	 * @param  int  $expires  Cookie expiration timestamp.
+	 *
+	 * @return bool
+	 */
+	protected function set_notification_cookie( $value, $expires ) {
+		$path     = defined( 'COOKIEPATH' ) && COOKIEPATH ? COOKIEPATH : '/';
+		$domain   = defined( 'COOKIE_DOMAIN' ) ? COOKIE_DOMAIN : '';
+		$secure   = is_ssl();
+		$httponly = true;
+
+		if ( PHP_VERSION_ID >= 70300 ) {
+			return setcookie( $this->cookie, (string) $value, array(
+				'expires'  => (int) $expires,
+				'path'     => $path,
+				'domain'   => $domain,
+				'secure'   => $secure,
+				'httponly' => $httponly,
+				'samesite' => 'Lax',
+			) );
+		}
+
+		return setcookie(
+			$this->cookie,
+			(string) $value,
+			(int) $expires,
+			$path . '; samesite=Lax',
+			$domain,
+			$secure,
+			$httponly
+		);
 	}
 }

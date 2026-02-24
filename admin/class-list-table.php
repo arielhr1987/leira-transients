@@ -118,10 +118,24 @@ class List_Table extends WP_List_Table{
 	 * @since 1.0.0
 	 */
 	protected function column_name( $item ) {
-		$name      = isset( $item['name'] ) ? $item['name'] : '';
-		$transient = leira_transients()->transients->validate_name( $name );
+		$name        = isset( $item['name'] ) ? $item['name'] : '';
+		$label       = isset( $item['label'] ) ? (string) $item['label'] : '';
+		$transient   = '' !== $label ? $label : leira_transients()->transients->validate_name( $name );
+		$is_site     = leira_transients()->transients->is_site_transient( $name );
+		$scope       = $is_site ? esc_html__( 'Site', 'leira-transients' ) : esc_html__( 'Regular',
+			'leira-transients' );
+		$badge_css   = $is_site ? 'badge-blue' : 'badge-gray';
+		$scope_title = $is_site
+			? esc_attr__( 'A site transient (network-level transient).', 'leira-transients' )
+			: esc_attr__( 'A regular transient (site-level transient).', 'leira-transients' );
 
-		$out = sprintf( '<strong>%s</strong>', esc_html( $transient ) );
+		$out = sprintf(
+			'<strong>%s</strong> <span class="badge %s" title="%s">%s</span>',
+			esc_html( $transient ),
+			esc_attr( $badge_css ),
+			$scope_title,
+			esc_html( $scope )
+		);
 
 		$out .= '<div class="hidden" id="inline_' . esc_attr( $name ) . '">';
 		foreach ( $item as $key => $value ) {
@@ -144,7 +158,7 @@ class List_Table extends WP_List_Table{
 	protected function column_value( $item ) {
 		$value = '<div class="nowrap">' . esc_html( $item['value'] ) . '</div>';
 		$type  = $this->get_transient_value_type( $item );
-		$type  = '<strong class="badge">' . $type . '</strong>';
+		$type  = '<strong class="badge badge-gray">' . $type . '</strong>';
 
 		return $value . $type;
 	}
@@ -234,6 +248,12 @@ class List_Table extends WP_List_Table{
 
 		//Base URL to create the links
 		$base_url = admin_url( 'tools.php' );
+		$s        = isset( $_REQUEST['s'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['s'] ) ) : '';
+		$orderby  = isset( $_GET['orderby'] ) ? sanitize_text_field( wp_unslash( $_GET['orderby'] ) ) : 'name';
+		$order    = isset( $_GET['order'] ) ? sanitize_text_field( wp_unslash( $_GET['order'] ) ) : 'desc';
+		$counts   = leira_transients()->transients->all( array(
+			'count' => 'views'
+		) );
 
 		//Create the views
 		$views = [];
@@ -242,20 +262,12 @@ class List_Table extends WP_List_Table{
 			$class = ( $current === $name ) ? 'current' : '';
 			//Create the URL for the view
 			$url_params = array(
-				'page'     => 'leira-transients',
-				'filter'   => $name,
-				'per_page' => $this->get_items_per_page( 'tools_page_leira_transients_per_page' ),
-				//'paged'    => $this->get_pagenum(),
-				's'        => isset( $_REQUEST['s'] ) ? esc_attr( sanitize_text_field( wp_unslash( $_REQUEST['s'] ) ) ) : '',
-				'orderby'  => isset( $_GET['orderby'] ) ? esc_attr( sanitize_text_field( wp_unslash( $_GET['orderby'] ) ) ) : 'name',
-				'order'    => isset( $_GET['order'] ) ? esc_attr( sanitize_text_field( wp_unslash( $_GET['order'] ) ) ) : 'desc',
+				'page'   => 'leira-transients',
+				'filter' => $name
 			);
 			$url        = add_query_arg( $url_params, $base_url );
 			//Count the transients for the view
-			$count = leira_transients()->transients->all( array(
-				'filter' => $name,
-				'count'  => true,
-			) );
+			$count = isset( $counts[ $name ] ) ? (int) $counts[ $name ] : 0;
 			//Create the view link
 			$views[ $name ] = sprintf(
 				'<a href="%s" class="%s">%s <span class="count">(%d)</span></a>',
@@ -299,21 +311,30 @@ class List_Table extends WP_List_Table{
 		$row_actions = '';
 
 		if ( $column_name === $primary ) {
+			$label      = isset( $item['label'] ) ? (string) $item['label'] : '';
+			$label      = '' !== $label ? $label : leira_transients()->transients->validate_name( $item['name'] );
+			$delete_url = add_query_arg(
+				[
+					'page'        => 'leira-transients',
+					'action'      => 'delete',
+					'action1'     => 'delete',
+					'transient[]' => urlencode( $item['name'] ),
+				],
+				admin_url( 'tools.php' )
+			);
+			$delete_url = wp_nonce_url( $delete_url, $this->get_wpnonce_action() );
+
 			$actions     = array(
 				'inline hide-if-no-js' => sprintf(
 					'<button type="button" class="button-link editinline" aria-label="%s" aria-expanded="false">%s</button>',
 					/*
 					 * translators: the transient name
 					 */
-					esc_attr( sprintf( __( 'Quick edit &#8220;%s&#8221;', 'leira-transients' ), $item['name'] ) ),
+					esc_attr( sprintf( __( 'Quick edit &#8220;%s&#8221;', 'leira-transients' ), $label ) ),
 					esc_html( __( 'Quick&nbsp;Edit', 'leira-transients' ) )
 				),
 				'delete'               => sprintf( '<a href="%s" class="submitdelete" aria-label="%s">%s</a>',
-					esc_url( wp_nonce_url( add_query_arg( [
-						'action'      => 'delete',
-						'action1'     => 'delete',
-						'transient[]' => urlencode( $item['name'] ),
-					] ), $this->get_wpnonce_action() ) ),
+					esc_url( $delete_url ),
 					__( 'Delete', 'leira-transients' ),
 					__( 'Delete', 'leira-transients' )
 				)
@@ -397,33 +418,30 @@ class List_Table extends WP_List_Table{
 		// Default type
 		$type = esc_html__( 'unknown', 'leira-transients' );
 
-		// Try to un-serialize
-		$value = maybe_unserialize( $transient );
-
-		if ( is_array( $value ) ) {
-			$type = esc_html__( 'array', 'leira-transients' );// Array
-		} elseif ( is_object( $value ) ) {
-			$type = esc_html__( 'object', 'leira-transients' );// Object
-		} elseif ( is_serialized( $value ) ) {
-			$type = esc_html__( 'serialized', 'leira-transients' );// Serialized array
-		} elseif ( wp_strip_all_tags( $value ) !== $value ) {
-			$type = esc_html__( 'html', 'leira-transients' );// HTML
-		} elseif ( is_scalar( $value ) ) {
-			// Scalar
-			if ( is_numeric( $value ) ) {
-				if ( 10 === strlen( $value ) ) {
-					$type = esc_html__( 'timestamp?', 'leira-transients' );// Likely a timestamp
-				} elseif ( in_array( $value, array( '0', '1' ), true ) ) {
-					$type = esc_html__( 'boolean?', 'leira-transients' );// Likely a boolean
-				} else {
-					$type = esc_html__( 'numeric', 'leira-transients' );// Any number
-				}
-			} elseif ( is_string( $value ) && is_object( json_decode( $value ) ) ) {
-				$type = esc_html__( 'json', 'leira-transients' );// JSON
+		if ( is_serialized( $transient ) ) {
+			$serialized_type = substr( ltrim( $transient ), 0, 1 );
+			if ( 'a' === $serialized_type ) {
+				$type = esc_html__( 'array', 'leira-transients' );
+			} elseif ( 'O' === $serialized_type || 'C' === $serialized_type ) {
+				$type = esc_html__( 'object', 'leira-transients' );
 			} else {
-				$type = esc_html__( 'scalar', 'leira-transients' );// Scalar
+				$type = esc_html__( 'serialized', 'leira-transients' );
 			}
-		} elseif ( empty( $value ) ) {
+		} elseif ( wp_strip_all_tags( $transient ) !== $transient ) {
+			$type = esc_html__( 'html', 'leira-transients' );
+		} elseif ( is_object( json_decode( $transient ) ) || is_array( json_decode( $transient, true ) ) ) {
+			$type = esc_html__( 'json', 'leira-transients' );
+		} elseif ( is_numeric( $transient ) ) {
+			if ( 10 === strlen( (string) $transient ) ) {
+				$type = esc_html__( 'timestamp?', 'leira-transients' );
+			} elseif ( in_array( (string) $transient, array( '0', '1' ), true ) ) {
+				$type = esc_html__( 'boolean?', 'leira-transients' );
+			} else {
+				$type = esc_html__( 'numeric', 'leira-transients' );
+			}
+		} elseif ( '' !== $transient ) {
+			$type = esc_html__( 'scalar', 'leira-transients' );
+		} else {
 			$type = esc_html__( 'empty', 'leira-transients' );// Empty
 		}
 

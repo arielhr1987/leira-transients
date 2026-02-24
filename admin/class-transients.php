@@ -65,101 +65,121 @@ class Transients{
 		);
 		$args     = wp_parse_args( $arg, $defaults );
 
-		$like_transient      = '_transient_%';
-		$like_site_transient = '_site_transient_%';
+		$sql = [];
 
 		/**
 		 * SELECT
 		 */
-		$sql = array( "SELECT" );
-
-		//Select columns based on the count argument
-		$count = isset( $args['count'] ) && $args['count'];
+		$sql[]     = 'SELECT';
+		$count_arg = $args['count'] ?? false;
+		$count     = (bool) $count_arg;
 		if ( $count ) {
-			$sql[] = "COUNT(*) AS total";
+			if ( $args['count'] === 'views' ) {
+				$sql[] = implode( ', ', [
+					'COUNT(*) AS `all`',
+					'SUM(CASE WHEN expiration > UNIX_TIMESTAMP() THEN 1 ELSE 0 END) AS `active`',
+					'SUM(CASE WHEN expiration <= UNIX_TIMESTAMP() THEN 1 ELSE 0 END) AS `expired`',
+					'SUM(CASE WHEN expiration IS NULL THEN 1 ELSE 0 END) AS `persistent`'
+				] );
+			} else {
+				$sql[] = 'COUNT(*) AS total';
+			}
 		} else {
-			$sql[] = array(
-				'o.option_id AS id,',
-				'o.option_name AS name,',
-//				array(
-//					"CASE",
-//					"WHEN o.option_name LIKE '$like_transient' THEN SUBSTRING(o.option_name, 12)",
-//					"WHEN o.option_name LIKE '$like_site_transient' THEN SUBSTRING(o.option_name, 17)",
-//					"ELSE o.option_name",
-//					"END AS name,",
-//				),
-				'o.option_value AS value,',
-				't.option_value AS expiration'
-			);
+			$sql[] = '*';
 		}
-
 		/**
 		 * FROM
 		 */
-		$sql[] = "FROM {$this->db->options} o";
+		$sql[] = 'FROM';
+		$sql[] = '(';
+		$types = [ '_transient', '_site_transient' ];
 
-		/**
-		 * JOIN
-		 */
-		$sql[] = "LEFT JOIN {$this->db->options} t ON ";
-		$sql[] = "(";
-		$sql[] = "( o.option_name LIKE '$like_transient' AND t.option_name = CONCAT('_transient_timeout_', SUBSTRING(o.option_name, 12)))";
-		$sql[] = "OR";
-		$sql[] = "( o.option_name LIKE '$like_site_transient' AND t.option_name = CONCAT('_site_transient_timeout_', SUBSTRING(o.option_name, 17)))";
-		$sql[] = ")";
+		foreach ( $types as $type ) {
+			/**
+			 * SELECT
+			 */
+			$subquery = [ 'SELECT' ];
+			if ( ! $count ) {
+				$type_length = strlen( $type ) + 2;
+				$subquery[]  = array(
+					'o.option_id AS `id`,',
+					'o.option_name AS `name`,',
+					"SUBSTRING(o.option_name,$type_length) AS `label`,",
+					'o.option_value AS `value`,',
+					't.option_value AS `expiration`'
+				);
+			} elseif ( 'views' === $count_arg ) {
+				$subquery[] = 't.option_value AS `expiration`';
+			} else {
+				$subquery[] = '1';
+			}
 
-		/**
-		 * WHERE
-		 */
-		$sql[] = "WHERE (";
-		$sql[] = "(o.option_name LIKE '$like_transient' AND o.option_name NOT LIKE '_transient_timeout_%')";
-		$sql[] = "OR";
-		$sql[] = "(o.option_name LIKE '$like_site_transient' AND o.option_name NOT LIKE '_site_transient_timeout_%')";
-		$sql[] = ")";
+			/**
+			 * FROM
+			 */
+			$subquery[] = "FROM {$this->db->options} o";
 
-		$search = isset( $args['s'] ) ? trim( $args['s'] ) : '';
-		if ( ! empty( $search ) ) {
-			$search            = $this->db->esc_like( $search );
-			$search_like_trans = $like_transient . $search . '%';
-			$search_like_site  = $like_site_transient . $search . '%';
-			$statement         = "AND (o.option_name LIKE %s OR o.option_name LIKE %s)";
-			$sql[]             = $this->db->prepare( $statement, $search_like_trans, $search_like_site );
+			/**
+			 * JOIN
+			 */
+			$substring        = $type . '_timeout_';
+			$substring_length = strlen( $type ) + 2;
+			$subquery[]       = "LEFT JOIN {$this->db->options} t ON t.option_name = CONCAT('$substring', SUBSTRING(o.option_name,$substring_length))";
+
+			/**
+			 * WHERE
+			 */
+			$like_prefix    = str_replace( '_', '\\_', $type );
+			$like_transient = $like_prefix . '\\_%';
+			$like_timeout   = $like_prefix . '\\_timeout\\_%';
+			$subquery[]     = "WHERE o.option_name LIKE '$like_transient' AND o.option_name NOT LIKE '$like_timeout'";
+
+			//Search
+			$search = isset( $args['s'] ) ? trim( $args['s'] ) : '';
+			if ( ! empty( $search ) ) {
+				$search            = $this->db->esc_like( $search );
+				$search_like_trans = $like_transient . $search . '%';
+				$statement         = "AND (o.option_name LIKE %s)";
+				$subquery[]        = $this->db->prepare( $statement, $search_like_trans );
+			}
+
+			// Filter by expiration status
+			// 'all' for all transients, 'active' for those that have not expired, and 'expired' for those that have.
+			// Default is 'all'.
+			$filter = isset( $args['filter'] ) ? $args['filter'] : 'all';
+			$filter = in_array( $filter, array( 'all', 'active', 'expired', 'persistent' ), true ) ? $filter : 'all';
+			if ( 'active' === $filter ) {
+				$subquery[] = "AND t.option_value > UNIX_TIMESTAMP()";
+			} elseif ( 'expired' === $filter ) {
+				$subquery[] = "AND t.option_value <= UNIX_TIMESTAMP()";
+			} elseif ( 'persistent' === $filter ) {
+				$subquery[] = "AND t.option_value IS NULL";
+			}
+
+			$sql[] = $subquery;
+			if ( end( $types ) != $type ) {
+				$sql[] = 'UNION ALL ';
+			}
 		}
 
-		// Filter by expiration status
-		// 'all' for all transients, 'active' for those that have not expired, and 'expired' for those that have.
-		// Default is 'all'.
-		$filter = isset( $args['filter'] ) ? $args['filter'] : 'all';
-		$filter = in_array( $filter, array( 'all', 'active', 'expired', 'persistent' ), true ) ? $filter : 'all';
-		if ( 'active' === $filter ) {
-			$sql[] = "AND t.option_value > UNIX_TIMESTAMP()";
-		} elseif ( 'expired' === $filter ) {
-			$sql[] = "AND t.option_value <= UNIX_TIMESTAMP()";
-		} elseif ( 'persistent' === $filter ) {
-			$sql[] = "AND t.option_value IS NULL";
-		}
+		$sql[] = ') AS transients';
 
-		/**
-		 * ORDER BY
-		 */
-		$order_by     = isset( $args['orderby'] ) ? $args['orderby'] : 'name';
-		$order_by     = in_array( $order_by, array( 'name', 'value', 'expiration' ), true ) ? $order_by : 'name';
-		$order_by_map = array(
-			'name'       => 'o.option_name',
-			'value'      => 'o.option_value',
-			'expiration' => 't.option_value',
-		);
-		$order_by     = $order_by_map[ $order_by ];
+		//Only add ORDER BY and LIMIT if COUNT is not present
+		if ( ! $count ) {
+			/**
+			 * ORDER BY
+			 */
+			$order_by = isset( $args['orderby'] ) ? $args['orderby'] : 'name';
+			$order_by = in_array( $order_by, array( 'name', 'value', 'expiration' ), true ) ? $order_by : 'name';
+			$order_by = $order_by === 'name' ? 'label' : $order_by; //force sort by label instead
+			$order    = isset( $args['order'] ) ? strtoupper( $args['order'] ) : 'DESC';
+			$order    = in_array( $order, array( 'ASC', 'DESC' ), true ) ? $order : 'DESC';
 
-		$order = isset( $args['order'] ) ? strtoupper( $args['order'] ) : 'DESC';
-		$order = in_array( $order, array( 'ASC', 'DESC' ), true ) ? $order : 'DESC';
+			$sql[] = "ORDER BY $order_by $order";
 
-		$sql[] = "ORDER BY $order_by $order";
-
-		/**
-		 * LIMIT
-		 */
-		if ( empty( $count ) ) {
+			/**
+			 * LIMIT
+			 */
 			$page     = isset( $args['paged'] ) ? max( 1, absint( (int) $args['paged'] ) ) : 1;
 			$per_page = isset( $args['per_page'] ) ? max( 1, absint( (int) $args['per_page'] ) ) : 25;
 			$sql[]    = $this->db->prepare( "LIMIT %d, %d", ( $page - 1 ) * $per_page, $per_page );
@@ -172,11 +192,14 @@ class Transients{
 		} );
 		$query = implode( "\n", $query );
 
-		// Prepare
-		$prepared = $this->db->prepare( $query );
-
 		// Query
-		$transients = empty( $count ) ? $this->db->get_results( $prepared, ARRAY_A ) : $this->db->get_var( $prepared );
+		if ( empty( $count ) ) {
+			$transients = $this->db->get_results( $query, ARRAY_A );
+		} elseif ( 'views' === $count_arg ) {
+			$transients = $this->db->get_row( $query, ARRAY_A );
+		} else {
+			$transients = $this->db->get_var( $query );
+		}
 
 		// Return transients
 		return $transients;
