@@ -17,19 +17,34 @@ table.transients {
 	}
 
 	.badge {
-		//padding: 3px 6px;
-		//border-radius: 5px;
-		//background-color: #F0F0F1;
-		//color: #000;
+		display: inline-block;
+		padding: 2px 8px;
+		border-radius: 999px;
+		font-size: 11px;
+		font-weight: 600;
+		line-height: 1.3;
+		vertical-align: middle;
+		background-color: #F0F0F1;
+		color: #1d2327;
+
+		&.badge-blue {
+			background-color: #dbeafe;
+			color: #1e3a8a;
+		}
+
+		&.badge-gray {
+			background-color: #e5e7eb;
+			color: #374151;
+		}
 
 		&.badge-green {
-			//background-color: #28a745;
-			//color: #fff;
+			background-color: #dcfce7;
+			color: #166534;
 		}
 
 		&.badge-red {
-			//background-color: #dc3545;
-			//color: #fff;
+			background-color: #fee2e2;
+			color: #991b1b;
 		}
 	}
 

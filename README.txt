@@ -70,6 +70,9 @@ If you have an idea to improve the plugin, please open an issue or submit a pull
 * Improved quick-edit validation for invalid expiration dates.
 * Hardened admin notification cookies (`HttpOnly`, `Secure` when applicable, `SameSite=Lax`).
 * Improved transient value type detection (JSON primitives, serialized scalar subtypes, and null).
+* Added scope badges in the Name column to clearly identify Site vs Regular transients.
+* Added tooltip help text for scope badges.
+* Improved badge styling for clearer status readability in the table.
 * Updated plugin readme text and documentation clarity.
 
 = 1.0.4 =

@@ -120,8 +120,20 @@ class List_Table extends WP_List_Table{
 	protected function column_name( $item ) {
 		$name      = isset( $item['name'] ) ? $item['name'] : '';
 		$transient = leira_transients()->transients->validate_name( $name );
+		$is_site   = leira_transients()->transients->is_site_transient( $name );
+		$scope     = $is_site ? esc_html__( 'Site', 'leira-transients' ) : esc_html__( 'Regular', 'leira-transients' );
+		$badge_css = $is_site ? 'badge-blue' : 'badge-gray';
+		$scope_title = $is_site
+			? esc_attr__( 'A site transient (network-level transient).', 'leira-transients' )
+			: esc_attr__( 'A regular transient (site-level transient).', 'leira-transients' );
 
-		$out = sprintf( '<strong>%s</strong>', esc_html( $transient ) );
+		$out = sprintf(
+			'<strong>%s</strong> <span class="badge %s" title="%s">%s</span>',
+			esc_html( $transient ),
+			esc_attr( $badge_css ),
+			$scope_title,
+			esc_html( $scope )
+		);
 
 		$out .= '<div class="hidden" id="inline_' . esc_attr( $name ) . '">';
 		foreach ( $item as $key => $value ) {
@@ -144,7 +156,7 @@ class List_Table extends WP_List_Table{
 	protected function column_value( $item ) {
 		$value = '<div class="nowrap">' . esc_html( $item['value'] ) . '</div>';
 		$type  = $this->get_transient_value_type( $item );
-		$type  = '<strong class="badge">' . $type . '</strong>';
+		$type  = '<strong class="badge badge-gray">' . $type . '</strong>';
 
 		return $value . $type;
 	}
