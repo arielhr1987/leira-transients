@@ -11,7 +11,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	<table style="display: none">
 		<tbody id="inlineedit">
 		<tr id="inline-edit" class="inline-edit-row quick-edit-row-page inline-edit-row-page" style="display: none">
-			<td colspan="<?php esc_html( $table->get_column_count() ) ?>" class="colspanchange">
+				<td colspan="<?php echo esc_attr( $table->get_column_count() ); ?>" class="colspanchange">
 				<input type="hidden" name="action" value="leira-transient-save"/>
 				<input type="hidden" name="name" value=""/>
 				<?php wp_nonce_field( $table->get_wpnonce_action() ); ?>

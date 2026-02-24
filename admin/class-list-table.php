@@ -234,6 +234,9 @@ class List_Table extends WP_List_Table{
 
 		//Base URL to create the links
 		$base_url = admin_url( 'tools.php' );
+		$counts = leira_transients()->transients->all( array(
+			'count'  => 'views',
+		) );
 
 		//Create the views
 		$views = [];
@@ -246,16 +249,13 @@ class List_Table extends WP_List_Table{
 				'filter'   => $name,
 				'per_page' => $this->get_items_per_page( 'tools_page_leira_transients_per_page' ),
 				//'paged'    => $this->get_pagenum(),
-				's'        => isset( $_REQUEST['s'] ) ? esc_attr( sanitize_text_field( wp_unslash( $_REQUEST['s'] ) ) ) : '',
-				'orderby'  => isset( $_GET['orderby'] ) ? esc_attr( sanitize_text_field( wp_unslash( $_GET['orderby'] ) ) ) : 'name',
-				'order'    => isset( $_GET['order'] ) ? esc_attr( sanitize_text_field( wp_unslash( $_GET['order'] ) ) ) : 'desc',
+				//'s'        => isset( $_REQUEST['s'] ) ? esc_attr( sanitize_text_field( wp_unslash( $_REQUEST['s'] ) ) ) : '',
+				//'orderby'  => isset( $_GET['orderby'] ) ? esc_attr( sanitize_text_field( wp_unslash( $_GET['orderby'] ) ) ) : 'name',
+				//'order'    => isset( $_GET['order'] ) ? esc_attr( sanitize_text_field( wp_unslash( $_GET['order'] ) ) ) : 'desc',
 			);
 			$url        = add_query_arg( $url_params, $base_url );
 			//Count the transients for the view
-			$count = leira_transients()->transients->all( array(
-				'filter' => $name,
-				'count'  => true,
-			) );
+			$count = isset( $counts[ $name ] ) ? (int) $counts[ $name ] : 0;
 			//Create the view link
 			$views[ $name ] = sprintf(
 				'<a href="%s" class="%s">%s <span class="count">(%d)</span></a>',
